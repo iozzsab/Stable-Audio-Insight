@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# Project-local Python install (created by install.bat)
+python-portable/
+
+# Virtual environment (legacy alternative)
+.venv/
+venv/
+
+# HuggingFace model cache (downloaded by users locally)
+hf-cache/
+
+# Generated outputs
+outputs/
+
+# Runtime logs (created by the app)
+logs/
+
+# IDE / OS / tooling
+.idea/
+.vscode/
+.claude/
+*.swp
+.DS_Store
+Thumbs.db
