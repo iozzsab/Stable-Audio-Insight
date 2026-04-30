@@ -35,6 +35,22 @@ _UI = {
         "batch_run_btn": "Run batch",
         "batch_status_label": "Batch status",
         "zip_export_btn": "Export outputs/Saved as ZIP",
+        "cancel_btn": "✋ Cancel",
+        "cancelled_msg": "Cancelled.",
+        "main_tab": "🎧 Main",
+        "batch_tab": "📦 Batch",
+        "settings_tab": "⚙️ Settings",
+        "batch_translation_label": "Translation (EN, line by line)",
+        "batch_translation_placeholder": "Auto-appears for any non-Latin line",
+        "device_label": "Device (GPU = fast / CPU = compatible, slow)",
+        "scheduler_help_md": (
+            "**Scheduler** — algorithm that drives the diffusion denoising. Same prompt + same seed, "
+            "different scheduler = a different audible result.\n\n"
+            "- **Default** — `DPMSolverSDEScheduler` shipped by Stability AI. Most predictable, recommended baseline.\n"
+            "- **DPM++ 2M** — converges faster; usable results from ~30–50 steps. Good when iterating.\n"
+            "- **Euler** — simpler, sometimes smoother on music loops; may need more steps."
+        ),
+        "settings_intro_md": "Persistent runtime settings — apply immediately to all subsequent generations.",
     },
     "ru": {
         "info_md": (
@@ -69,6 +85,22 @@ _UI = {
         "batch_run_btn": "Запустить пакет",
         "batch_status_label": "Статус пакета",
         "zip_export_btn": "Экспортировать outputs/Saved в ZIP",
+        "cancel_btn": "✋ Отмена",
+        "cancelled_msg": "Отменено.",
+        "main_tab": "🎧 Основной",
+        "batch_tab": "📦 Пакетный",
+        "settings_tab": "⚙️ Настройки",
+        "batch_translation_label": "Перевод (EN, построчно)",
+        "batch_translation_placeholder": "Появится автоматически для любой не-латинской строки",
+        "device_label": "Устройство (GPU = быстро / CPU = совместимо, медленно)",
+        "scheduler_help_md": (
+            "**Шедулер** — алгоритм, по которому диффузионная модель убирает шум. "
+            "Один и тот же промпт + сид, разный шедулер = разный звук.\n\n"
+            "- **Default** — `DPMSolverSDEScheduler`, родной для Stable Audio Open. Самый предсказуемый.\n"
+            "- **DPM++ 2M** — быстрее сходится, годные результаты уже на ~30–50 шагах. Хорош при подборе.\n"
+            "- **Euler** — проще, иногда мягче для музыкальных лупов; может требовать больше шагов."
+        ),
+        "settings_intro_md": "Постоянные настройки сессии — применяются ко всем последующим генерациям.",
     },
     "zh": {
         "info_md": (
@@ -102,6 +134,21 @@ _UI = {
         "batch_run_btn": "运行批量",
         "batch_status_label": "批量状态",
         "zip_export_btn": "导出 outputs/Saved 为 ZIP",
+        "cancel_btn": "✋ 取消",
+        "cancelled_msg": "已取消。",
+        "main_tab": "🎧 主要",
+        "batch_tab": "📦 批量",
+        "settings_tab": "⚙️ 设置",
+        "batch_translation_label": "翻译 (EN, 逐行)",
+        "batch_translation_placeholder": "对于任何非拉丁文字行将自动出现",
+        "device_label": "设备 (GPU = 快 / CPU = 兼容, 慢)",
+        "scheduler_help_md": (
+            "**Scheduler** — 驱动扩散去噪的算法。相同提示词 + 相同种子，不同 scheduler = 不同的音频。\n\n"
+            "- **Default** — Stability AI 提供的 `DPMSolverSDEScheduler`。最可预测，建议作为基准。\n"
+            "- **DPM++ 2M** — 收敛更快；约 30–50 步即可获得可用结果。适合迭代调试。\n"
+            "- **Euler** — 更简单，对音乐循环有时更平滑；可能需要更多步数。"
+        ),
+        "settings_intro_md": "持久会话设置 — 立即应用到之后所有的生成。",
     },
     "ja": {
         "info_md": (
@@ -136,6 +183,21 @@ _UI = {
         "batch_run_btn": "バッチ実行",
         "batch_status_label": "バッチ状態",
         "zip_export_btn": "outputs/Saved を ZIP でエクスポート",
+        "cancel_btn": "✋ キャンセル",
+        "cancelled_msg": "キャンセルされました。",
+        "main_tab": "🎧 メイン",
+        "batch_tab": "📦 バッチ",
+        "settings_tab": "⚙️ 設定",
+        "batch_translation_label": "翻訳 (EN, 1行ずつ)",
+        "batch_translation_placeholder": "ラテン文字以外の行で自動表示されます",
+        "device_label": "デバイス (GPU = 高速 / CPU = 互換、低速)",
+        "scheduler_help_md": (
+            "**Scheduler** — 拡散ノイズ除去を駆動するアルゴリズム。同じプロンプト + シードでも、scheduler が違えば音が変わります。\n\n"
+            "- **Default** — Stability AI 提供の `DPMSolverSDEScheduler`。最も予測可能。基準として推奨。\n"
+            "- **DPM++ 2M** — 収束が早く、約 30–50 ステップで実用的な結果。試行錯誤向き。\n"
+            "- **Euler** — シンプルで、音楽ループにはより滑らかになることもあります。多めのステップが必要な場合あり。"
+        ),
+        "settings_intro_md": "永続セッション設定 — すぐに以降のすべての生成に適用されます。",
     },
     "es": {
         "info_md": (
@@ -170,6 +232,22 @@ _UI = {
         "batch_run_btn": "Ejecutar lote",
         "batch_status_label": "Estado del lote",
         "zip_export_btn": "Exportar outputs/Saved como ZIP",
+        "cancel_btn": "✋ Cancelar",
+        "cancelled_msg": "Cancelado.",
+        "main_tab": "🎧 Principal",
+        "batch_tab": "📦 Lote",
+        "settings_tab": "⚙️ Ajustes",
+        "batch_translation_label": "Traducción (EN, línea por línea)",
+        "batch_translation_placeholder": "Aparece automáticamente para cualquier línea no latina",
+        "device_label": "Dispositivo (GPU = rápido / CPU = compatible, lento)",
+        "scheduler_help_md": (
+            "**Scheduler** — algoritmo que controla la eliminación de ruido de la difusión. "
+            "Mismo prompt + misma semilla, distinto scheduler = sonido distinto.\n\n"
+            "- **Default** — `DPMSolverSDEScheduler` de Stability AI. El más predecible, base recomendada.\n"
+            "- **DPM++ 2M** — converge más rápido; resultados utilizables desde ~30–50 pasos. Bueno al iterar.\n"
+            "- **Euler** — más simple, a veces más suave en loops musicales; puede requerir más pasos."
+        ),
+        "settings_intro_md": "Ajustes persistentes de sesión — se aplican de inmediato a todas las siguientes generaciones.",
     },
     "fr": {
         "info_md": (
@@ -204,6 +282,22 @@ _UI = {
         "batch_run_btn": "Lancer le batch",
         "batch_status_label": "Statut du batch",
         "zip_export_btn": "Exporter outputs/Saved en ZIP",
+        "cancel_btn": "✋ Annuler",
+        "cancelled_msg": "Annulé.",
+        "main_tab": "🎧 Principal",
+        "batch_tab": "📦 Lot",
+        "settings_tab": "⚙️ Réglages",
+        "batch_translation_label": "Traduction (EN, ligne par ligne)",
+        "batch_translation_placeholder": "S'affiche automatiquement pour toute ligne non latine",
+        "device_label": "Appareil (GPU = rapide / CPU = compatible, lent)",
+        "scheduler_help_md": (
+            "**Scheduler** — algorithme qui pilote le débruitage de la diffusion. "
+            "Même prompt + même seed, scheduler différent = son différent.\n\n"
+            "- **Default** — `DPMSolverSDEScheduler` fourni par Stability AI. Le plus prévisible, base recommandée.\n"
+            "- **DPM++ 2M** — converge plus vite ; résultats exploitables dès ~30–50 étapes. Pratique en itération.\n"
+            "- **Euler** — plus simple, parfois plus doux pour les loops musicaux ; peut demander plus d'étapes."
+        ),
+        "settings_intro_md": "Réglages persistants de session — s'appliquent immédiatement à toutes les générations suivantes.",
     },
     "de": {
         "info_md": (
@@ -238,6 +332,22 @@ _UI = {
         "batch_run_btn": "Batch starten",
         "batch_status_label": "Batch-Status",
         "zip_export_btn": "outputs/Saved als ZIP exportieren",
+        "cancel_btn": "✋ Abbrechen",
+        "cancelled_msg": "Abgebrochen.",
+        "main_tab": "🎧 Hauptbereich",
+        "batch_tab": "📦 Batch",
+        "settings_tab": "⚙️ Einstellungen",
+        "batch_translation_label": "Übersetzung (EN, zeilenweise)",
+        "batch_translation_placeholder": "Erscheint automatisch für nicht-lateinische Zeilen",
+        "device_label": "Gerät (GPU = schnell / CPU = kompatibel, langsam)",
+        "scheduler_help_md": (
+            "**Scheduler** — Algorithmus, der das Diffusion-Denoising steuert. "
+            "Gleicher Prompt + gleicher Seed, anderer Scheduler = anderer Klang.\n\n"
+            "- **Default** — `DPMSolverSDEScheduler` von Stability AI. Am besten vorhersagbar, empfohlene Basis.\n"
+            "- **DPM++ 2M** — konvergiert schneller; brauchbare Ergebnisse ab ~30–50 Schritten. Gut beim Iterieren.\n"
+            "- **Euler** — einfacher, manchmal weicher bei Musik-Loops; kann mehr Schritte brauchen."
+        ),
+        "settings_intro_md": "Persistente Sitzungseinstellungen — gelten sofort für alle folgenden Generierungen.",
     },
     "pt": {
         "info_md": (
@@ -272,6 +382,22 @@ _UI = {
         "batch_run_btn": "Executar lote",
         "batch_status_label": "Status do lote",
         "zip_export_btn": "Exportar outputs/Saved como ZIP",
+        "cancel_btn": "✋ Cancelar",
+        "cancelled_msg": "Cancelado.",
+        "main_tab": "🎧 Principal",
+        "batch_tab": "📦 Lote",
+        "settings_tab": "⚙️ Configurações",
+        "batch_translation_label": "Tradução (EN, linha por linha)",
+        "batch_translation_placeholder": "Aparece automaticamente para qualquer linha não latina",
+        "device_label": "Dispositivo (GPU = rápido / CPU = compatível, lento)",
+        "scheduler_help_md": (
+            "**Scheduler** — algoritmo que conduz o denoising da difusão. "
+            "Mesmo prompt + mesma seed, scheduler diferente = som diferente.\n\n"
+            "- **Default** — `DPMSolverSDEScheduler` da Stability AI. Mais previsível, base recomendada.\n"
+            "- **DPM++ 2M** — converge mais rápido; resultados úteis a partir de ~30–50 passos. Bom para iterar.\n"
+            "- **Euler** — mais simples, às vezes mais suave em loops musicais; pode exigir mais passos."
+        ),
+        "settings_intro_md": "Configurações persistentes da sessão — aplicam-se imediatamente a todas as gerações seguintes.",
     },
     "ko": {
         "info_md": (
@@ -305,6 +431,22 @@ _UI = {
         "batch_run_btn": "배치 실행",
         "batch_status_label": "배치 상태",
         "zip_export_btn": "outputs/Saved 를 ZIP 으로 내보내기",
+        "cancel_btn": "✋ 취소",
+        "cancelled_msg": "취소되었습니다.",
+        "main_tab": "🎧 메인",
+        "batch_tab": "📦 배치",
+        "settings_tab": "⚙️ 설정",
+        "batch_translation_label": "번역 (EN, 한 줄씩)",
+        "batch_translation_placeholder": "비라틴 문자가 포함된 줄에서 자동 표시됩니다",
+        "device_label": "장치 (GPU = 빠름 / CPU = 호환, 느림)",
+        "scheduler_help_md": (
+            "**Scheduler** — 디퓨전 노이즈 제거를 구동하는 알고리즘. "
+            "같은 프롬프트 + 같은 시드라도 scheduler 가 다르면 결과가 달라집니다.\n\n"
+            "- **Default** — Stability AI 기본 `DPMSolverSDEScheduler`. 가장 예측 가능하고 권장 기준.\n"
+            "- **DPM++ 2M** — 더 빠르게 수렴; ~30–50 스텝부터 쓸 만함. 시행착오에 적합.\n"
+            "- **Euler** — 단순하고 음악 루프에서 부드러울 수 있음; 더 많은 스텝이 필요할 수도 있음."
+        ),
+        "settings_intro_md": "세션 영속 설정 — 이후 모든 생성에 즉시 적용됩니다.",
     },
 }
 

@@ -47,9 +47,14 @@ Self-contained Windows-приложение для [Stable Audio Open 1.0](https
 - Windows 10 / 11 (тестировалось на Windows 11 Pro)
 - Python **3.11.x** — https://www.python.org/downloads/release/python-3119/
   (при установке отметьте **Add Python to PATH**)
-- NVIDIA GPU с CUDA 12.8 (тестировалось на RTX 5080, 16 ГБ VRAM).
-  Для других серий замените индекс PyTorch в `install.bat` / `setup.bat`
-  (например `cu121` для CUDA 12.1).
+- NVIDIA GPU с CUDA 12.x:
+  - **Минимум**: ~4 ГБ VRAM (fp16, 1 вариация, ≤ 20 сек, ≤ 100 шагов)
+  - **Рекомендуется**: 8 ГБ+ VRAM для 4 вариаций × 47 сек при 100+ шагах
+  - 6 ГБ — нормально для 1–2 вариаций; 4 одновременно могут вызвать OOM
+  - Для других версий CUDA замените индекс PyTorch в `install.bat` /
+    `setup.bat` (например `cu121` для CUDA 12.1)
+  - Нет NVIDIA → используйте `RunOnCPU.bat` или переключатель **GPU/CPU**
+    в интерфейсе (медленнее, но работает)
 - **15–20 ГБ свободного места** на время установки (после: ~10–13 ГБ резидентно):
   - ~5 ГБ — веса Stable Audio Open
   - ~4–5 ГБ — Python + PyTorch CUDA + зависимости

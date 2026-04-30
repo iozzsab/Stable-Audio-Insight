@@ -47,9 +47,14 @@ Stability AI 의 [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stab
 - Windows 10 / 11 (Windows 11 Pro 에서 테스트)
 - Python **3.11.x** — https://www.python.org/downloads/release/python-3119/
   (설치 시 **Add Python to PATH** 선택)
-- CUDA 12.8 지원 NVIDIA GPU (RTX 5080, 16 GB VRAM 에서 테스트).
-  다른 GPU 의 경우 `install.bat` / `setup.bat` 의 PyTorch 인덱스를
-  변경 (예: CUDA 12.1 은 `cu121`).
+- CUDA 12.x 지원 NVIDIA GPU:
+  - **최소**: ~4 GB VRAM (fp16, 1 변형, ≤ 20 초, ≤ 100 스텝)
+  - **권장**: 8 GB+ VRAM, 4 변형 × 47 초, 100+ 스텝 기준
+  - 6 GB 는 1–2 변형은 안정적; 4 변형 동시에는 OOM 가능
+  - 다른 CUDA 버전은 `install.bat` / `setup.bat` 의 PyTorch 인덱스를
+    변경 (예: CUDA 12.1 → `cu121`)
+  - NVIDIA 없음 → `RunOnCPU.bat` 또는 UI 의 **GPU/CPU** 토글 사용
+    (느리지만 작동)
 - **설치 시 15–20 GB 여유 공간** (설치 후 상주 약 10–13 GB):
   - ~5 GB — Stable Audio Open 가중치
   - ~4–5 GB — Python + PyTorch CUDA + 의존성

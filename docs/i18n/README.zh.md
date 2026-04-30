@@ -47,9 +47,14 @@
 - Windows 10 / 11（在 Windows 11 Pro 上测试）
 - Python **3.11.x** — https://www.python.org/downloads/release/python-3119/
   （安装时勾选 **Add Python to PATH**）
-- 支持 CUDA 12.8 的 NVIDIA 显卡（在 RTX 5080 16 GB 上测试）。
-  其他显卡请修改 `install.bat` / `setup.bat` 中的 PyTorch 索引
-  （例如 CUDA 12.1 用 `cu121`）。
+- 支持 CUDA 12.x 的 NVIDIA 显卡：
+  - **最低**：~4 GB VRAM（fp16、1 个变体、≤ 20 秒、≤ 100 步）
+  - **推荐**：8 GB+ VRAM，用于 4 个变体 × 47 秒、100+ 步
+  - 6 GB 可正常运行 1–2 个变体；4 个同时变体可能 OOM
+  - 其他 CUDA 版本请修改 `install.bat` / `setup.bat` 中的 PyTorch 索引
+    （例如 CUDA 12.1 用 `cu121`）
+  - 无 NVIDIA 显卡 → 使用 `RunOnCPU.bat` 或界面中的 **GPU/CPU** 切换
+    （较慢但可用）
 - **安装时约 15–20 GB 可用磁盘空间**（安装后常驻约 10–13 GB）：
   - ~5 GB — Stable Audio Open 权重
   - ~4–5 GB — Python + PyTorch CUDA + 依赖

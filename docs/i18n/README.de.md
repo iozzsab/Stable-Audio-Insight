@@ -47,9 +47,14 @@ Eigenständige Windows-App für [Stable Audio Open 1.0](https://huggingface.co/s
 - Windows 10 / 11 (getestet auf Windows 11 Pro)
 - Python **3.11.x** — https://www.python.org/downloads/release/python-3119/
   (während der Installation **Add Python to PATH** ankreuzen)
-- NVIDIA-GPU mit CUDA 12.8 (getestet auf RTX 5080, 16 GB VRAM).
-  Für andere GPUs den PyTorch-Index in `install.bat` / `setup.bat` anpassen
-  (z. B. `cu121` für CUDA 12.1).
+- NVIDIA-GPU mit CUDA 12.x:
+  - **Minimum**: ~4 GB VRAM (fp16, 1 Variation, ≤ 20 s, ≤ 100 Schritte)
+  - **Empfohlen**: 8 GB+ VRAM für 4 Variationen × 47 s mit 100+ Schritten
+  - 6 GB reichen für 1–2 Variationen; 4 gleichzeitig können OOM auslösen
+  - Für andere CUDA-Versionen den PyTorch-Index in `install.bat` /
+    `setup.bat` anpassen (z. B. `cu121` für CUDA 12.1)
+  - Keine NVIDIA → `RunOnCPU.bat` oder den **GPU/CPU**-Schalter im UI
+    nutzen (langsamer, funktioniert aber)
 - **15–20 GB freier Speicher während der Installation** (danach: ~10–13 GB resident):
   - ~5 GB — Stable-Audio-Open-Gewichte
   - ~4–5 GB — Python + PyTorch CUDA + Abhängigkeiten
