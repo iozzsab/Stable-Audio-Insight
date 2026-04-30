@@ -1065,7 +1065,9 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
     gr.Markdown(
         "<div style='text-align:center;font-size:13px;opacity:0.8;"
         "margin-top:18px;padding-top:10px;border-top:1px solid var(--border-color-primary);'>"
-        "Stable Audio Open 1.0 © Stability AI · Stable Audio Insight by Oscar Lumiere"
+        "Stable Audio Open 1.0 © Stability AI · Stable Audio Insight by "
+        "<a href='https://www.io-oscar.com/' target='_blank' "
+        "style='color:inherit;text-decoration:underline;'>Oscar Lumiere</a>"
         "</div>"
     )
 

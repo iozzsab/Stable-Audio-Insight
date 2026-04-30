@@ -18,5 +18,11 @@ if not defined PY_BIN (
     exit /b 1
 )
 
+if not defined PORT set "PORT=7860"
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr ":%PORT% " ^| findstr "LISTENING"') do (
+    echo Port %PORT% busy ^(PID %%P^) - killing stale process
+    taskkill /PID %%P /F >nul 2>&1
+)
+
 "!PY_BIN!" src\app.py
 pause

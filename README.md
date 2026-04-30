@@ -13,7 +13,9 @@
 
 # Stable Audio Insight
 
-*By Oscar Lumiere*
+<img src="docs/assets/Stable-Audio-Insight_logo.webp" width="320" alt="Stable Audio Insight">
+
+<sub><i>By Oscar Lumiere</i></sub>
 
 ## Quick start
 
@@ -41,6 +43,16 @@ Self-contained Windows app for [Stable Audio Open 1.0](https://huggingface.co/st
 - **Per-session log file** in `logs/app-YYYYMMDD-HHMMSS.log` with full tracebacks on errors
 - **One-file installer** (`install.bat`) — silently sets up Python 3.11.9 inside the project folder, picks `torch+cu128` or CPU torch via `nvidia-smi` auto-detect, downloads model and translator. Truly portable: deleting the project leaves zero traces in the system
 - **Update path** — `update.bat` refreshes deps and re-syncs models
+
+<p align="center">
+  <video src="https://github.com/oscarlumiere/Stable-Audio-Insight/raw/main/docs/assets/demo.webm" controls width="480"></video>
+</p>
+
+<p align="center">
+  <a href="docs/assets/main.webp"><img src="docs/assets/main.webp" width="160"></a>
+  <a href="docs/assets/Batch.webp"><img src="docs/assets/Batch.webp" width="160"></a>
+  <a href="docs/assets/settings.webp"><img src="docs/assets/settings.webp" width="160"></a>
+</p>
 
 ## Requirements
 
