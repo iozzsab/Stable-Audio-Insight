@@ -51,6 +51,11 @@ _UI = {
             "- **Euler** — simpler, sometimes smoother on music loops; may need more steps."
         ),
         "settings_intro_md": "Persistent runtime settings — apply immediately to all subsequent generations.",
+        "batch_mode_label": "Batch dispatch",
+        "batch_mode_one": "One by one (low VRAM, ~Nx slower)",
+        "batch_mode_all": "All at once (Nx VRAM, single GPU pass)",
+        "clear_intermediate_btn": "🧹 Clear outputs/intermediate",
+        "zip_export_btn_v2": "📦 Zip last batch",
     },
     "ru": {
         "info_md": (
@@ -101,6 +106,11 @@ _UI = {
             "- **Euler** — проще, иногда мягче для музыкальных лупов; может требовать больше шагов."
         ),
         "settings_intro_md": "Постоянные настройки сессии — применяются ко всем последующим генерациям.",
+        "batch_mode_label": "Режим пакета",
+        "batch_mode_one": "По одному (мало VRAM, в N раз медленнее)",
+        "batch_mode_all": "Все сразу (в N раз больше VRAM, один проход)",
+        "clear_intermediate_btn": "🧹 Очистить outputs/intermediate",
+        "zip_export_btn_v2": "📦 ZIP последнего пакета",
     },
     "zh": {
         "info_md": (
@@ -149,6 +159,11 @@ _UI = {
             "- **Euler** — 更简单，对音乐循环有时更平滑；可能需要更多步数。"
         ),
         "settings_intro_md": "持久会话设置 — 立即应用到之后所有的生成。",
+        "batch_mode_label": "批量调度",
+        "batch_mode_one": "逐个 (低 VRAM, 慢 N 倍)",
+        "batch_mode_all": "一次全部 (N 倍 VRAM, 单次 GPU 调用)",
+        "clear_intermediate_btn": "🧹 清空 outputs/intermediate",
+        "zip_export_btn_v2": "📦 打包最近一次批量",
     },
     "ja": {
         "info_md": (
@@ -198,6 +213,11 @@ _UI = {
             "- **Euler** — シンプルで、音楽ループにはより滑らかになることもあります。多めのステップが必要な場合あり。"
         ),
         "settings_intro_md": "永続セッション設定 — すぐに以降のすべての生成に適用されます。",
+        "batch_mode_label": "バッチ実行方式",
+        "batch_mode_one": "1 件ずつ (低 VRAM、N 倍遅い)",
+        "batch_mode_all": "一括 (N 倍 VRAM、1 回の GPU 呼び出し)",
+        "clear_intermediate_btn": "🧹 outputs/intermediate を空にする",
+        "zip_export_btn_v2": "📦 直近のバッチを ZIP",
     },
     "es": {
         "info_md": (
@@ -248,6 +268,11 @@ _UI = {
             "- **Euler** — más simple, a veces más suave en loops musicales; puede requerir más pasos."
         ),
         "settings_intro_md": "Ajustes persistentes de sesión — se aplican de inmediato a todas las siguientes generaciones.",
+        "batch_mode_label": "Modo de lote",
+        "batch_mode_one": "Uno por uno (poca VRAM, ~Nx más lento)",
+        "batch_mode_all": "Todo a la vez (Nx VRAM, una sola pasada GPU)",
+        "clear_intermediate_btn": "🧹 Limpiar outputs/intermediate",
+        "zip_export_btn_v2": "📦 Empaquetar último lote",
     },
     "fr": {
         "info_md": (
@@ -298,6 +323,11 @@ _UI = {
             "- **Euler** — plus simple, parfois plus doux pour les loops musicaux ; peut demander plus d'étapes."
         ),
         "settings_intro_md": "Réglages persistants de session — s'appliquent immédiatement à toutes les générations suivantes.",
+        "batch_mode_label": "Mode de lot",
+        "batch_mode_one": "Un par un (peu de VRAM, ~Nx plus lent)",
+        "batch_mode_all": "Tout d'un coup (Nx VRAM, un seul appel GPU)",
+        "clear_intermediate_btn": "🧹 Vider outputs/intermediate",
+        "zip_export_btn_v2": "📦 Zipper le dernier lot",
     },
     "de": {
         "info_md": (
@@ -348,6 +378,11 @@ _UI = {
             "- **Euler** — einfacher, manchmal weicher bei Musik-Loops; kann mehr Schritte brauchen."
         ),
         "settings_intro_md": "Persistente Sitzungseinstellungen — gelten sofort für alle folgenden Generierungen.",
+        "batch_mode_label": "Batch-Modus",
+        "batch_mode_one": "Einzeln (wenig VRAM, ~Nx langsamer)",
+        "batch_mode_all": "Alle auf einmal (Nx VRAM, ein GPU-Pass)",
+        "clear_intermediate_btn": "🧹 outputs/intermediate leeren",
+        "zip_export_btn_v2": "📦 Letzten Batch als ZIP",
     },
     "pt": {
         "info_md": (
@@ -398,6 +433,11 @@ _UI = {
             "- **Euler** — mais simples, às vezes mais suave em loops musicais; pode exigir mais passos."
         ),
         "settings_intro_md": "Configurações persistentes da sessão — aplicam-se imediatamente a todas as gerações seguintes.",
+        "batch_mode_label": "Modo de lote",
+        "batch_mode_one": "Um por um (pouca VRAM, ~Nx mais lento)",
+        "batch_mode_all": "Tudo de uma vez (Nx VRAM, uma passagem GPU)",
+        "clear_intermediate_btn": "🧹 Limpar outputs/intermediate",
+        "zip_export_btn_v2": "📦 Compactar último lote",
     },
     "ko": {
         "info_md": (
@@ -447,6 +487,11 @@ _UI = {
             "- **Euler** — 단순하고 음악 루프에서 부드러울 수 있음; 더 많은 스텝이 필요할 수도 있음."
         ),
         "settings_intro_md": "세션 영속 설정 — 이후 모든 생성에 즉시 적용됩니다.",
+        "batch_mode_label": "배치 실행 방식",
+        "batch_mode_one": "하나씩 (낮은 VRAM, ~N 배 느림)",
+        "batch_mode_all": "한번에 모두 (N 배 VRAM, GPU 1회 호출)",
+        "clear_intermediate_btn": "🧹 outputs/intermediate 비우기",
+        "zip_export_btn_v2": "📦 마지막 배치 ZIP 으로 묶기",
     },
 }
 

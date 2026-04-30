@@ -302,7 +302,10 @@ def generate(prompt: str, negative: str, seconds: float, steps: int, cfg: float,
 MAX_BATCH_PREVIEW = 20
 
 
-def generate_batch(batch_prompts: str, negative: str, seconds: float, steps: int, cfg: float, progress=gr.Progress(track_tqdm=True)):
+def generate_batch(batch_prompts: str, negative: str, seconds: float, steps: int, cfg: float, all_at_once: bool = False, save_all: bool = False, progress=gr.Progress(track_tqdm=True)):
+    mode = "all" if all_at_once else "one"
+    target_dir = SAVED_DIR if save_all else INTERMEDIATE_DIR
+    target_dir.mkdir(parents=True, exist_ok=True)
     empty_previews = [gr.update(value="", visible=False) for _ in range(MAX_BATCH_PREVIEW)]
     if not batch_prompts or not batch_prompts.strip():
         yield ("Empty batch — paste prompts (one per line).", *empty_previews)
@@ -312,13 +315,83 @@ def generate_batch(batch_prompts: str, negative: str, seconds: float, steps: int
         yield ("Empty batch — paste prompts (one per line).", *empty_previews)
         return
 
-    SAVED_DIR.mkdir(parents=True, exist_ok=True)
     n_eff = _translator.translate(negative) if needs_translation(negative) else (negative or "")
     seconds = float(min(max(seconds, 1.0), MAX_DURATION))
     steps = int(steps)
     cfg = float(cfg)
     results: list[str] = []
     previews = list(empty_previews)
+
+    if mode == "all":
+        yield (f"Translating {len(lines)} prompt(s)…", *previews)
+        p_eff_list = [_translator.translate(p) if needs_translation(p) else p for p in lines]
+        seeds = [int(torch.randint(0, 2**31 - 1, (1,)).item()) for _ in lines]
+        device_str = str(pipe.device).split(":")[0]
+        gens = [torch.Generator(device=device_str).manual_seed(s) for s in seeds]
+        log.info(f"batch all-at-once: {len(lines)} prompts, single GPU pass, steps={steps}")
+        yield (f"Running {len(lines)} prompt(s) in a single GPU pass…", *previews)
+        _free_cuda()
+
+        def _do_all(s):
+            return pipe(
+                prompt=p_eff_list,
+                negative_prompt=[n_eff or ""] * len(lines) if n_eff else None,
+                num_inference_steps=s,
+                audio_end_in_s=seconds,
+                guidance_scale=cfg,
+                generator=gens,
+            )
+
+        try:
+            try:
+                res = _do_all(steps)
+            except IndexError as ie:
+                if "out of bounds" in str(ie).lower():
+                    log.warning(f"batch-all: scheduler IndexError; retrying with steps={steps+2}")
+                    _free_cuda()
+                    gens = [torch.Generator(device=device_str).manual_seed(s) for s in seeds]
+                    res = _do_all(steps + 2)
+                else:
+                    raise
+
+            for i, audio_tensor in enumerate(res.audios, start=1):
+                try:
+                    audio = post_audio(audio_tensor)
+                    slug = slugify_prompt(p_eff_list[i - 1])
+                    counter = next_counter(target_dir, slug)
+                    fname = target_dir / f"{slug}_{counter:02d}.wav"
+                    metadata = {
+                        "title": p_eff_list[i - 1],
+                        "artist": "Stable Audio Insight",
+                        "software": f"Stable Audio Open 1.0 / {get_model_id()}",
+                        "creation_date": time.strftime("%Y-%m-%d"),
+                        "comment": f"seed={seeds[i-1]}; batch_index={i}; mode=all; duration={seconds:.1f}s; steps={steps}; cfg={cfg}; sample_rate={SAMPLE_RATE}Hz",
+                    }
+                    write_wav_with_metadata(fname, audio, SAMPLE_RATE, metadata)
+                    results.append(f"{i}/{len(lines)}: {fname.name}")
+                    if i - 1 < MAX_BATCH_PREVIEW:
+                        previews[i - 1] = gr.update(
+                            value=_mini_audio_html(str(fname), f"#{i}: {p_eff_list[i-1][:60]}"),
+                            visible=True,
+                        )
+                except Exception as e:
+                    log.exception(f"batch-all post item {i} failed")
+                    results.append(f"{i}/{len(lines)}: ERROR - {e}")
+            del res
+            _free_cuda()
+        except torch.cuda.OutOfMemoryError as e:
+            _free_cuda()
+            log.exception("batch-all CUDA OOM")
+            results.append(f"ERROR: CUDA OOM in all-at-once mode — try fewer prompts, shorter duration, or switch to one-by-one. ({e})")
+        except Exception as e:
+            _free_cuda()
+            log.exception("batch-all failed")
+            results.append(f"ERROR: {e}")
+
+        final_status = "\n".join(results) if results else "Batch finished (no items processed)."
+        yield (final_status, *previews)
+        return
+
     yield (f"Starting batch: {len(lines)} prompt(s)…", *previews)
 
     for i, p in enumerate(lines, start=1):
@@ -349,8 +422,8 @@ def generate_batch(batch_prompts: str, negative: str, seconds: float, steps: int
                     raise
             audio = post_audio(res.audios[0])
             slug = slugify_prompt(p_eff)
-            counter = next_counter(SAVED_DIR, slug)
-            fname = SAVED_DIR / f"{slug}_{counter:02d}.wav"
+            counter = next_counter(target_dir, slug)
+            fname = target_dir / f"{slug}_{counter:02d}.wav"
             metadata = {
                 "title": p_eff,
                 "artist": "Stable Audio Insight",
@@ -373,6 +446,30 @@ def generate_batch(batch_prompts: str, negative: str, seconds: float, steps: int
             log.exception(f"batch item {i} failed")
             results.append(f"{i}/{len(lines)}: ERROR - {e}")
         yield ("\n".join(results), *previews)
+
+    final_status = "\n".join(results) if results else "Batch finished (no items processed)."
+    yield (final_status, *previews)
+
+
+def clear_intermediate() -> str:
+    if not INTERMEDIATE_DIR.exists():
+        return "outputs/intermediate is already empty (folder does not exist)."
+    files = [f for f in INTERMEDIATE_DIR.iterdir() if f.is_file() and f.suffix.lower() == ".wav"]
+    if not files:
+        return "outputs/intermediate is already empty."
+    deleted = 0
+    failed: list[str] = []
+    for f in files:
+        try:
+            f.unlink()
+            deleted += 1
+        except Exception as e:
+            failed.append(f"{f.name}: {e}")
+    msg = f"Cleared {deleted} file(s) from outputs/intermediate."
+    if failed:
+        msg += f" {len(failed)} failed: {'; '.join(failed[:3])}"
+    log.info(msg)
+    return msg
 
 
 def export_zip():
@@ -458,15 +555,38 @@ CUSTOM_CSS = """
 }
 /* Mini audio for history and batch previews — native HTML5 <audio>,
    thin standard browser controls with play/seek/volume. */
-.mini-audio { padding: 0 !important; min-height: 0 !important; }
-.mini-track { display: flex; flex-direction: column; gap: 2px; padding: 4px 0; border-bottom: 1px solid rgba(127,127,127,0.15); }
-.mini-label { font-size: 11px; opacity: 0.75; padding: 0 4px; }
-.mini-track audio { display: block; }
+.mini-audio {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.mini-audio > div { padding: 0 !important; margin: 0 !important; }
+.mini-track {
+    display: flex;
+    flex-direction: column;
+    gap: 0 !important;
+    padding: 3px 4px !important;
+    border-bottom: 1px solid rgba(127,127,127,0.25);
+}
+.mini-label { font-size: 11px; opacity: 0.75; line-height: 1.2; }
+.mini-track audio { display: block; height: 28px !important; }
+/* Eliminate the gap that Gradio puts between successive components */
+.mini-audio + .mini-audio { margin-top: 0 !important; }
+/* Scrollable container for the global Recent generations accordion */
+.history-scroll {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.history-accordion { margin-top: 8px; }
 """
 
 with gr.Blocks(title="Stable Audio Insight") as demo:
     with gr.Column(elem_classes=["intro-card"]):
-        gr.Markdown(i18n("info_md"))
+        gr.Markdown("# 🎵 Stable Audio Insight")
         gr.Markdown(
             f"GPU: **{gpu_name}** · Model: `{MODEL_ID}` · "
             f"Translator: `{get_model_id()}` ({get_kind()}) · "
@@ -552,47 +672,62 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
                         )
                         audio_outs.append(a)
                     save_btn = gr.Button(i18n("save_btn"), size="sm")
-                    history_state = gr.State([])
-                    with gr.Accordion(i18n("history_title"), open=False):
-                        history_audios = []
-                        for i in range(HISTORY_SIZE):
-                            a = gr.HTML(value="", visible=False, elem_classes=["mini-audio"])
-                            history_audios.append(a)
+                    with gr.Accordion(i18n("history_title"), open=False, elem_classes=["history-accordion"]):
+                        with gr.Column(elem_classes=["history-scroll"]):
+                            main_history_audios = []
+                            for i in range(HISTORY_SIZE):
+                                a = gr.HTML(value="", visible=False, elem_classes=["mini-audio"])
+                                main_history_audios.append(a)
 
         with gr.Tab(i18n("batch_tab")):
-            batch_prompts_box = gr.Textbox(
-                label=i18n("batch_prompts_label"),
-                lines=8,
-                max_lines=30,
-                placeholder="footsteps on wood\nrain on roof\n128 BPM tech house\nкрик ворона в лесу",
-                interactive=True,
-            )
-            batch_translation_out = gr.Textbox(
-                label=i18n("batch_translation_label"),
-                lines=4,
-                max_lines=30,
-                interactive=False,
-                placeholder=i18n("batch_translation_placeholder"),
-            )
-            batch_negative = gr.Textbox(
-                label=i18n("negative_label"),
-                lines=2,
-                value="low quality, average quality, noisy, muffled, distorted, amateur, lo-fi recording",
-            )
             with gr.Row():
-                batch_seconds = gr.Slider(1, MAX_DURATION, value=10, step=0.5, label=i18n("duration_label"))
-                batch_steps = gr.Slider(10, 250, value=100, step=1, label=i18n("steps_label"))
-                batch_cfg = gr.Slider(1.0, 15.0, value=7.0, step=0.5, label=i18n("cfg_label"))
-            with gr.Row():
-                batch_btn = gr.Button(i18n("batch_run_btn"), variant="primary", size="lg", scale=2)
-                zip_btn = gr.Button(i18n("zip_export_btn"), variant="secondary", size="lg", scale=2)
-                batch_cancel_btn = gr.Button(i18n("cancel_btn"), variant="stop", size="lg", scale=1)
-            batch_status = gr.Textbox(label=i18n("batch_status_label"), lines=4, interactive=False)
-            zip_file = gr.File(label="ZIP", visible=False, interactive=False)
-            batch_previews = []
-            for i in range(MAX_BATCH_PREVIEW):
-                a = gr.HTML(value="", visible=False, elem_classes=["mini-audio"])
-                batch_previews.append(a)
+                with gr.Column(scale=2):
+                    batch_prompts_box = gr.Textbox(
+                        label=i18n("batch_prompts_label"),
+                        lines=8,
+                        max_lines=30,
+                        placeholder="footsteps on wood\nrain on roof\n128 BPM tech house\nкрик ворона в лесу",
+                        interactive=True,
+                    )
+                    batch_translation_out = gr.Textbox(
+                        label=i18n("batch_translation_label"),
+                        lines=4,
+                        max_lines=30,
+                        interactive=False,
+                        placeholder=i18n("batch_translation_placeholder"),
+                    )
+                    batch_negative = gr.Textbox(
+                        label=i18n("negative_label"),
+                        lines=2,
+                        value="low quality, average quality, noisy, muffled, distorted, amateur, lo-fi recording",
+                    )
+                    with gr.Row():
+                        batch_seconds = gr.Slider(1, MAX_DURATION, value=10, step=0.5, label=i18n("duration_label"))
+                        batch_steps = gr.Slider(10, 250, value=100, step=1, label=i18n("steps_label"))
+                        batch_cfg = gr.Slider(1.0, 15.0, value=7.0, step=0.5, label=i18n("cfg_label"))
+                    batch_all_at_once = gr.Checkbox(
+                        value=False,
+                        label=i18n("batch_mode_all"),
+                        interactive=True,
+                    )
+                    with gr.Row():
+                        batch_btn = gr.Button(i18n("batch_run_btn"), variant="primary", size="lg", scale=3)
+                        batch_cancel_btn = gr.Button(i18n("cancel_btn"), variant="stop", size="lg", scale=1)
+
+                with gr.Column(scale=1):
+                    batch_status = gr.Textbox(label=i18n("batch_status_label"), lines=4, interactive=False)
+                    batch_previews = []
+                    for i in range(MAX_BATCH_PREVIEW):
+                        a = gr.HTML(value="", visible=False, elem_classes=["mini-audio"])
+                        batch_previews.append(a)
+                    zip_btn = gr.Button(i18n("zip_export_btn_v2"), variant="secondary", size="sm")
+                    zip_file = gr.File(label="ZIP", visible=False, interactive=False)
+                    with gr.Accordion(i18n("history_title"), open=False, elem_classes=["history-accordion"]):
+                        with gr.Column(elem_classes=["history-scroll"]):
+                            batch_history_audios = []
+                            for i in range(HISTORY_SIZE):
+                                a = gr.HTML(value="", visible=False, elem_classes=["mini-audio"])
+                                batch_history_audios.append(a)
 
         with gr.Tab(i18n("settings_tab")):
             gr.Markdown(i18n("settings_intro_md"))
@@ -607,7 +742,12 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
                     choices=SCHEDULERS, value="Default", label=i18n("scheduler_label"), interactive=True,
                 )
             save_all = gr.Checkbox(label=i18n("save_all_label"), value=False)
+            clear_intermediate_btn = gr.Button(i18n("clear_intermediate_btn"), variant="secondary", size="sm")
             gr.Markdown(i18n("scheduler_help_md"))
+            gr.Markdown("---")
+            gr.Markdown(i18n("info_md"))
+
+    history_state = gr.State([])
 
     gen_info_state = gr.State("")
     with gr.Column(elem_classes=["bottom-log"]):
@@ -628,22 +768,28 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
         show_progress="hidden",
     )
 
-    def _push_to_history(*args):
-        *new_paths, current_history = args
-        fresh = [p for p in new_paths if p]
-        if not fresh:
-            return [current_history or []] + [gr.update() for _ in range(HISTORY_SIZE)]
-        new_hist = fresh + [p for p in (current_history or []) if p not in fresh]
-        new_hist = new_hist[:HISTORY_SIZE]
-        updates = []
+    def _build_history_updates(new_hist: list) -> list:
+        out = []
         for i in range(HISTORY_SIZE):
             if i < len(new_hist):
                 p = new_hist[i]
                 label = Path(p).name
-                updates.append(gr.update(value=_mini_audio_html(p, f"#{i+1} · {label}"), visible=True))
+                out.append(gr.update(value=_mini_audio_html(p, f"#{i+1} · {label}"), visible=True))
             else:
-                updates.append(gr.update(value="", visible=False))
-        return [new_hist] + updates
+                out.append(gr.update(value="", visible=False))
+        return out
+
+    def _push_to_history(*args):
+        *new_paths, current_history = args
+        fresh = [p for p in new_paths if p]
+        if not fresh:
+            no_change = [gr.update() for _ in range(HISTORY_SIZE * 2)]
+            return [current_history or []] + no_change
+        new_hist = fresh + [p for p in (current_history or []) if p not in fresh]
+        new_hist = new_hist[:HISTORY_SIZE]
+        u1 = _build_history_updates(new_hist)
+        u2 = _build_history_updates(new_hist)
+        return [new_hist] + u1 + u2
 
     _gen_clear = btn.click(
         clear_audio_slots,
@@ -667,7 +813,7 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
     gen_event.then(
         _push_to_history,
         inputs=[*audio_outs, history_state],
-        outputs=[history_state, *history_audios],
+        outputs=[history_state, *main_history_audios, *batch_history_audios],
         queue=False,
         show_progress="hidden",
     )
@@ -704,7 +850,7 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
     reroll_event.then(
         _push_to_history,
         inputs=[*audio_outs, history_state],
-        outputs=[history_state, *history_audios],
+        outputs=[history_state, *main_history_audios, *batch_history_audios],
         queue=False,
         show_progress="hidden",
     )
@@ -779,43 +925,35 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
     )
     batch_event = _batch_clear.then(
         generate_batch,
-        inputs=[batch_prompts_box, batch_negative, batch_seconds, batch_steps, batch_cfg],
+        inputs=[batch_prompts_box, batch_negative, batch_seconds, batch_steps, batch_cfg, batch_all_at_once, save_all],
         outputs=[batch_status, *batch_previews],
     )
 
     def _push_batch_to_history(*args):
-        # batch_previews values are now HTML strings; we need underlying paths.
-        # Pull from current_history accumulator below as fallback.
         *preview_html, current_history = args
-        # Extract the file path from the HTML payload, since previews are HTML now.
         import re as _re
+        from urllib.parse import unquote
         new_paths: list[str] = []
         for h in preview_html:
             if not h:
                 continue
             m = _re.search(r'/gradio_api/file=([^"\s]+)', str(h))
             if m:
-                from urllib.parse import unquote
                 new_paths.append(unquote(m.group(1)))
         if not new_paths:
-            return [current_history or []] + [gr.update() for _ in range(HISTORY_SIZE)]
+            no_change = [gr.update() for _ in range(HISTORY_SIZE * 2)]
+            return [current_history or []] + no_change
         recent_first = list(reversed(new_paths))
         new_hist = recent_first + [p for p in (current_history or []) if p not in recent_first]
         new_hist = new_hist[:HISTORY_SIZE]
-        updates = []
-        for i in range(HISTORY_SIZE):
-            if i < len(new_hist):
-                p = new_hist[i]
-                label = Path(p).name
-                updates.append(gr.update(value=_mini_audio_html(p, f"#{i+1} · {label}"), visible=True))
-            else:
-                updates.append(gr.update(value="", visible=False))
-        return [new_hist] + updates
+        u1 = _build_history_updates(new_hist)
+        u2 = _build_history_updates(new_hist)
+        return [new_hist] + u1 + u2
 
     batch_event.then(
         _push_batch_to_history,
         inputs=[*batch_previews, history_state],
-        outputs=[history_state, *history_audios],
+        outputs=[history_state, *main_history_audios, *batch_history_audios],
         queue=False,
         show_progress="hidden",
     )
@@ -879,14 +1017,47 @@ with gr.Blocks(title="Stable Audio Insight") as demo:
         show_progress="hidden",
     )
 
-    def _do_zip():
-        path, msg = export_zip()
-        if path is None:
-            return gr.update(visible=False), msg
-        return gr.update(value=path, visible=True), msg
+    clear_inter_event = clear_intermediate_btn.click(
+        clear_intermediate,
+        outputs=gen_info_state,
+        queue=False,
+        show_progress="hidden",
+    )
+    clear_inter_event.then(
+        _append_log,
+        inputs=[gen_info_state, info_out],
+        outputs=info_out,
+        queue=False,
+        show_progress="hidden",
+    )
+
+    def _do_zip(*preview_values):
+        import re as _re
+        from urllib.parse import unquote
+        paths: list[str] = []
+        for h in preview_values:
+            if not h:
+                continue
+            m = _re.search(r'/gradio_api/file=([^"\s]+)', str(h))
+            if m:
+                paths.append(unquote(m.group(1)))
+        if not paths:
+            return gr.update(visible=False), "Nothing to zip — run a batch first."
+        zip_path = TMP_DIR / f"stable-audio-batch-{time.strftime('%Y%m%d-%H%M%S')}.zip"
+        zipped = 0
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            for p in paths:
+                pp = Path(p)
+                if pp.exists():
+                    zf.write(pp, pp.name)
+                    zipped += 1
+        if zipped == 0:
+            return gr.update(visible=False), "Nothing to zip — files are missing."
+        return gr.update(value=str(zip_path), visible=True), f"Zipped {zipped} files: {zip_path.name}"
 
     zip_btn.click(
         _do_zip,
+        inputs=batch_previews,
         outputs=[zip_file, batch_status],
         queue=False,
     )
