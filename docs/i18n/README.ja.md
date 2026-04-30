@@ -17,6 +17,7 @@
 
 ## クイックスタート
 
+0. [Download Last Release](https://github.com/oscarlumiere/Stable-Audio-Insight/releases/latest)
 1. https://huggingface.co で登録（既にアカウントがあればスキップ）
 2. https://huggingface.co/stabilityai/stable-audio-open-1.0 を開いて **Agree and access repository** をクリック
 3. https://huggingface.co/settings/tokens で **New token** → Type: Read → Create
@@ -195,9 +196,9 @@ run.bat
 
 ## クレジット
 
-- **Stable Audio Open 1.0** — Stability AI
-- **opus-mt-mul-en** — Helsinki-NLP / Tatoeba Translation Challenge
-- **NLLB-200** — Meta AI / FAIR
-- **Gradio**、**diffusers**、**transformers**、**accelerate** — HuggingFace
-- **ラッパー開発** — Oscar Lumiere
+- **[Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0)** — Stability AI
+- **[opus-mt-mul-en](https://huggingface.co/Helsinki-NLP/opus-mt-mul-en)** — Helsinki-NLP / Tatoeba Translation Challenge
+- **[NLLB-200](https://huggingface.co/facebook/nllb-200-distilled-600M)** — Meta AI / FAIR
+- **[Gradio](https://github.com/gradio-app/gradio)**、**[diffusers](https://github.com/huggingface/diffusers)**、**[transformers](https://github.com/huggingface/transformers)**、**[accelerate](https://github.com/huggingface/accelerate)** — HuggingFace
+- **ラッパー開発** — [Oscar Lumiere](https://www.io-oscar.com/)
 - **支援** — [Claude Code](https://www.anthropic.com/claude-code) (Anthropic)

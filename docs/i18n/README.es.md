@@ -17,6 +17,7 @@
 
 ## Inicio rápido
 
+0. [Download Last Release](https://github.com/oscarlumiere/Stable-Audio-Insight/releases/latest)
 1. Regístrese en https://huggingface.co (omita si ya tiene cuenta)
 2. Abra https://huggingface.co/stabilityai/stable-audio-open-1.0 → haga clic en **Agree and access repository**
 3. En https://huggingface.co/settings/tokens → **New token** → Type: Read → Create
@@ -196,9 +197,9 @@ Para uso comercial, elija el traductor **light** durante la instalación.
 
 ## Créditos
 
-- **Stable Audio Open 1.0** — Stability AI
-- **opus-mt-mul-en** — Helsinki-NLP / Tatoeba Translation Challenge
-- **NLLB-200** — Meta AI / FAIR
-- **Gradio**, **diffusers**, **transformers**, **accelerate** — HuggingFace
-- **Desarrollo del wrapper** — Oscar Lumiere
+- **[Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0)** — Stability AI
+- **[opus-mt-mul-en](https://huggingface.co/Helsinki-NLP/opus-mt-mul-en)** — Helsinki-NLP / Tatoeba Translation Challenge
+- **[NLLB-200](https://huggingface.co/facebook/nllb-200-distilled-600M)** — Meta AI / FAIR
+- **[Gradio](https://github.com/gradio-app/gradio)**, **[diffusers](https://github.com/huggingface/diffusers)**, **[transformers](https://github.com/huggingface/transformers)**, **[accelerate](https://github.com/huggingface/accelerate)** — HuggingFace
+- **Desarrollo del wrapper** — [Oscar Lumiere](https://www.io-oscar.com/)
 - **Asistencia** — [Claude Code](https://www.anthropic.com/claude-code) (Anthropic)

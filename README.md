@@ -18,7 +18,7 @@
 <sub><i>By Oscar Lumiere</i></sub>
 
 ## Quick start
-0. [Download Last Realease](https://github.com/oscarlumiere/Stable-Audio-Insight/releases)
+0. [Download Last Release](https://github.com/oscarlumiere/Stable-Audio-Insight/releases/latest)
 1. Register at https://huggingface.co (skip if you already have an account)
 2. Open https://huggingface.co/stabilityai/stable-audio-open-1.0 → click **Agree and access repository**
 3. At https://huggingface.co/settings/tokens → **New token** → Type: Read → Create

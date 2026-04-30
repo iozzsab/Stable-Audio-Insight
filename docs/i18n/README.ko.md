@@ -17,6 +17,7 @@
 
 ## 빠른 시작
 
+0. [Download Last Release](https://github.com/oscarlumiere/Stable-Audio-Insight/releases/latest)
 1. https://huggingface.co 에서 회원가입 (계정이 있으면 건너뛰기)
 2. https://huggingface.co/stabilityai/stable-audio-open-1.0 을 열고 **Agree and access repository** 클릭
 3. https://huggingface.co/settings/tokens 에서 **New token** → Type: Read → Create
@@ -197,9 +198,9 @@ run.bat
 
 ## 크레딧
 
-- **Stable Audio Open 1.0** — Stability AI
-- **opus-mt-mul-en** — Helsinki-NLP / Tatoeba Translation Challenge
-- **NLLB-200** — Meta AI / FAIR
-- **Gradio**, **diffusers**, **transformers**, **accelerate** — HuggingFace
-- **래퍼 개발** — Oscar Lumiere
+- **[Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0)** — Stability AI
+- **[opus-mt-mul-en](https://huggingface.co/Helsinki-NLP/opus-mt-mul-en)** — Helsinki-NLP / Tatoeba Translation Challenge
+- **[NLLB-200](https://huggingface.co/facebook/nllb-200-distilled-600M)** — Meta AI / FAIR
+- **[Gradio](https://github.com/gradio-app/gradio)**, **[diffusers](https://github.com/huggingface/diffusers)**, **[transformers](https://github.com/huggingface/transformers)**, **[accelerate](https://github.com/huggingface/accelerate)** — HuggingFace
+- **래퍼 개발** — [Oscar Lumiere](https://www.io-oscar.com/)
 - **지원** — [Claude Code](https://www.anthropic.com/claude-code) (Anthropic)
